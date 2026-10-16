@@ -16,7 +16,8 @@ gpu_poll_seconds    = 1.0
 memory_poll_seconds = 1.0
 
 [bar.default]
-auto_hide = true
+auto_hide     = true
+reserve_space = false
 
 # Floating, full-width: no end insets, a real gap from the top edge instead
 # of sitting flush against it. Concave corners only apply when margin_edge
