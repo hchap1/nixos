@@ -3,5 +3,5 @@
 {
 	console = {
 		useXkbConfig = true;
-	}
+	};
 }

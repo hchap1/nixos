@@ -1,11 +1,15 @@
 { pkgs, ... }:
 
 {
-  environment.systemPackages = with pkgs; [
-    neovim
-    claude-code
-    gh
-  ];
+	environment.systemPackages = with pkgs; [
+		neovim
+			claude-code
+			gh
+			eza
+			ripgrep
+			bat
+			git
+	];
 
-  programs.firefox.enable = true;
+	programs.firefox.enable = true;
 }
