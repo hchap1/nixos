@@ -1,20 +1,19 @@
-{ inputs, ... }:
+{ inputs, config, ... }:
 
 {
   imports = [ inputs.noctalia.homeModules.default ];
 
   programs.noctalia = {
     enable = true;
-
-    # Starts noctalia as a systemd --user service tied to the Wayland
-    # session target, instead of an exec-once line in hyprland.lua.
     systemd.enable = true;
-
-    # `settings` is intentionally left unset (default {}). Setting it would
-    # make home-manager generate and manage ~/.config/noctalia/config.toml,
-    # which gets regenerated (and the live file backed up/clobbered) on
-    # every `nixos-rebuild switch`. Leaving it unset means home-manager never
-    # touches that file at all, so edits made in noctalia's own settings GUI
-    # persist across rebuilds.
   };
+
+  # Real file in the repo (home/noctalia/config.toml), symlinked out of the
+  # store, same reasoning as hyprland.lua: `noctalia msg ...` persists
+  # changes (theme, wallpaper, bar state) straight back into this file, and
+  # that needs it to be a writable path, not a store-backed one. `settings`
+  # is left unset on programs.noctalia above so the module never contends
+  # for this same path.
+  xdg.configFile."noctalia/config.toml".source =
+    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/nixos/home/noctalia/config.toml";
 }

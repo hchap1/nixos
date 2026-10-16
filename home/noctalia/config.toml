@@ -1,0 +1,43 @@
+[theme]
+source  = "builtin"
+builtin = "Catppuccin"
+mode    = "dark"
+
+[theme.templates]
+enable_builtin_templates = true
+builtin_ids = ["ghostty"]
+
+[wallpaper]
+enabled = true
+
+[system.monitor]
+cpu_poll_seconds    = 1.0
+gpu_poll_seconds    = 1.0
+memory_poll_seconds = 1.0
+
+[bar.default]
+auto_hide = true
+
+start  = ["clock"]
+center = ["cpu_usage", "cpu_temp", "gpu_usage", "gpu_temp", "ram_used"]
+end    = ["media", "network", "bluetooth", "volume", "brightness"]
+
+[widget.cpu_usage]
+type = "sysmon"
+stat = "cpu_usage"
+
+[widget.cpu_temp]
+type = "sysmon"
+stat = "cpu_temp"
+
+[widget.gpu_usage]
+type = "sysmon"
+stat = "gpu_usage"
+
+[widget.gpu_temp]
+type = "sysmon"
+stat = "gpu_temp"
+
+[widget.ram_used]
+type = "sysmon"
+stat = "ram_used"
