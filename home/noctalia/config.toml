@@ -31,7 +31,7 @@ capsule_opacity = 0.85
 
 start  = ["cpu_usage", "cpu_temp", "gpu_usage", "gpu_temp", "ram_used"]
 center = ["clock", "media"]
-end    = ["network", "bluetooth", "volume", "brightness"]
+end    = ["tray", "notifications", "clipboard", "network", "bluetooth", "volume", "brightness", "control-center", "session"]
 
 [widget.cpu_usage]
 type       = "sysmon"
@@ -75,3 +75,15 @@ icon_color = "tertiary"
 
 [widget.brightness]
 icon_color = "secondary"
+
+[widget.notifications]
+icon_color = "tertiary"
+
+[widget.clipboard]
+icon_color = "primary"
+
+[widget.control-center]
+icon_color = "secondary"
+
+[widget.session]
+icon_color = "tertiary"
