@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-config="$HOME/.config/noctalia/config.toml"
+# `noctalia msg color-scheme-set` persists here, in the state dir - not in
+# config.toml, which stays static. Reading config.toml for "current theme"
+# is why this used to always compute the same target (bug, now fixed).
+config="$HOME/.local/state/noctalia/settings.toml"
 wallpapers="$HOME/Pictures/wallpapers"
 nvim_state="$HOME/.cache/nvim/noctalia-theme"
 
