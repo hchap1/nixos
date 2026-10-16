@@ -18,26 +18,60 @@ memory_poll_seconds = 1.0
 [bar.default]
 auto_hide = true
 
-start  = ["clock"]
-center = ["cpu_usage", "cpu_temp", "gpu_usage", "gpu_temp", "ram_used"]
-end    = ["media", "network", "bluetooth", "volume", "brightness"]
+# Floating, full-width: no end insets, a real gap from the top edge instead
+# of sitting flush against it. Concave corners only apply when margin_edge
+# is 0, so turn them off now that the bar floats.
+margin_ends          = 0
+margin_edge           = 10
+concave_edge_corners = false
+
+capsule         = true
+capsule_fill    = "surface_variant"
+capsule_opacity = 0.85
+
+start  = ["cpu_usage", "cpu_temp", "gpu_usage", "gpu_temp", "ram_used"]
+center = ["clock", "media"]
+end    = ["network", "bluetooth", "volume", "brightness"]
 
 [widget.cpu_usage]
-type = "sysmon"
-stat = "cpu_usage"
+type       = "sysmon"
+stat       = "cpu_usage"
+icon_color = "primary"
 
 [widget.cpu_temp]
-type = "sysmon"
-stat = "cpu_temp"
+type       = "sysmon"
+stat       = "cpu_temp"
+icon_color = "secondary"
 
 [widget.gpu_usage]
-type = "sysmon"
-stat = "gpu_usage"
+type       = "sysmon"
+stat       = "gpu_usage"
+icon_color = "tertiary"
 
 [widget.gpu_temp]
-type = "sysmon"
-stat = "gpu_temp"
+type       = "sysmon"
+stat       = "gpu_temp"
+icon_color = "primary"
 
 [widget.ram_used]
-type = "sysmon"
-stat = "ram_used"
+type       = "sysmon"
+stat       = "ram_used"
+icon_color = "secondary"
+
+[widget.clock]
+icon_color = "tertiary"
+
+[widget.media]
+icon_color = "primary"
+
+[widget.network]
+icon_color = "secondary"
+
+[widget.bluetooth]
+icon_color = "primary"
+
+[widget.volume]
+icon_color = "tertiary"
+
+[widget.brightness]
+icon_color = "secondary"
