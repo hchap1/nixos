@@ -1,8 +1,6 @@
 { ... }:
 
 {
-  # Compositor is launched via UWSM; the actual hyprland.lua config is owned
-  # by home-manager (see home/modules/hyprland/default.nix).
   programs.hyprland = {
     enable = true;
     withUWSM = true;
