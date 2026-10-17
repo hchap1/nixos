@@ -15,10 +15,9 @@ hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("~/nixos/home/noctalia/theme-swit
 hl.bind(mod .. " + SHIFT + U", hl.dsp.exec_cmd("noctalia msg session lock"))
 hl.bind(mod .. " + SPACE", hl.dsp.exec_cmd("noctalia msg panel-toggle launcher"))
 
--- Drag-select a region; --freeze grabs a still frame first and slurp
--- selects over that, so the screen doesn't change under you mid-drag.
-hl.bind(mod .. " + SHIFT + S", hl.dsp.exec_cmd("grimblast --freeze --notify copy area"))
-hl.bind(mod .. " + CTRL + SHIFT + S", hl.dsp.exec_cmd("grimblast --freeze --notify copysave area"))
+-- Drag-select a region.
+hl.bind(mod .. " + SHIFT + S", hl.dsp.exec_cmd("grimblast --notify copy area"))
+hl.bind(mod .. " + CTRL + SHIFT + S", hl.dsp.exec_cmd("grimblast --notify copysave area"))
 
 -- Niri-style overview. Hyprspace exposes this as hl.plugin.overview.*
 -- (addLuaFunction) rather than a classic string dispatcher - see the
@@ -31,17 +30,42 @@ hl.bind(mod .. " + TAB", function() hl.plugin.overview.toggle() end)
 -- layout's own fullscreen handler.
 hl.bind(mod .. " + CTRL + F", hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }))
 
+-- Number of distinct columns currently on a workspace (0 if ws is nil).
+local function countColumns(ws)
+	if not ws then return 0 end
+
+	local seen, count = {}, 0
+	for _, w in ipairs(ws:get_windows()) do
+		local col = w.layout and w.layout.column
+		if col and col.index ~= nil and not seen[col.index] then
+			seen[col.index] = true
+			count = count + 1
+		end
+	end
+	return count
+end
+
 -- Resizes the focused column between a fixed pair of width fractions
 -- (of the monitor's width), toggling to whichever of the pair it's
 -- currently furthest from. No-ops on floating windows (they have no
--- column).
+-- column). A column alone on its workspace always resolves to half width
+-- instead of toggling - see the window.open hook below for why "alone"
+-- means half in the first place; Win+F re-asserts that regardless of
+-- the pair, rather than letting a lone column cycle down to quarter
+-- (dead space with nothing to balance against) or getting stuck looking
+-- unchanged if something external nudged its stored width around.
 local function cycleColumnWidth(pair)
 	local win = hl.get_active_window()
 	if not win then return end
 	local col = win.layout and win.layout.column
 	if not col then return end
 
-	local target = (math.abs(col.width - pair[1]) < 0.02) and pair[2] or pair[1]
+	local target
+	if countColumns(win.workspace) <= 1 then
+		target = 0.5
+	else
+		target = (math.abs(col.width - pair[1]) < 0.02) and pair[2] or pair[1]
+	end
 	hl.dispatch(hl.dsp.layout("colresize " .. target))
 end
 
@@ -49,6 +73,20 @@ end
 hl.bind(mod .. " + F", function() cycleColumnWidth({ 0.25, 0.5 }) end)
 -- "Big things" range: half <-> full monitor width.
 hl.bind(mod .. " + SHIFT + F", function() cycleColumnWidth({ 0.5, 1.0 }) end)
+
+-- A column that's alone on its workspace defaults to half the monitor's
+-- width, not whatever scrolling_width a window rule gave it (e.g.
+-- rules.lua's narrower 0.25 default for terminals) - a single tiled
+-- window at quarter width looks like a mistake when there's nothing else
+-- to fill the rest of the screen. (appearance.lua disables Hyprland's own
+-- fullscreen_on_one_column, which used to "solve" this by stretching the
+-- lone column to the *entire* screen instead - also wrong, just wrong the
+-- other direction, and what made SUPER+F look like it did nothing.)
+hl.on("window.open", function(win)
+	if countColumns(win and win.workspace) == 1 then
+		hl.dispatch(hl.dsp.layout("colresize 0.5"))
+	end
+end)
 
 -- Focus-follow only slides the view when the focused column would
 -- otherwise go off-screen (see appearance.lua's focus_fit_method) - this
@@ -59,17 +97,7 @@ hl.bind(mod .. " + C", hl.dsp.layout("center"))
 -- monitor's width.
 hl.bind(mod .. " + M", function()
 	local win = hl.get_active_window()
-	local ws = win and win.workspace
-	if not ws then return end
-
-	local seen, count = {}, 0
-	for _, w in ipairs(ws:get_windows()) do
-		local col = w.layout and w.layout.column
-		if col and col.index ~= nil and not seen[col.index] then
-			seen[col.index] = true
-			count = count + 1
-		end
-	end
+	local count = countColumns(win and win.workspace)
 	if count == 0 then return end
 
 	hl.dispatch(hl.dsp.layout("colresize all " .. (1 / count)))

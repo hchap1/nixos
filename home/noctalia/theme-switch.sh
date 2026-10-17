@@ -13,7 +13,7 @@ current="$(grep -oP '(?<=^builtin = ")[^"]+' "$config" || true)"
 
 if [ "$current" = "Catppuccin" ]; then
 	target=Gruvbox
-	wallpaper="$wallpapers/gruvbox.jpg"
+	wallpaper="$wallpapers/wp10580938-5120x1440-space-wallpapers.png"
 	rgb_color=fe8019
 	nvim_colorscheme=gruvbox
 	discord_theme_url="https://raw.githubusercontent.com/shvedes/discord-gruvbox/main/gruvbox-dark.theme.css"
@@ -22,7 +22,7 @@ if [ "$current" = "Catppuccin" ]; then
 	spicetify_scheme=frappe
 else
 	target=Catppuccin
-	wallpaper="$wallpapers/catppuccin.jpg"
+	wallpaper="$wallpapers/wp10580938-5120x1440-space-wallpapers.png"
 	rgb_color=cba6f7
 	nvim_colorscheme=catppuccin-mocha
 	discord_theme_url="https://catppuccin.github.io/discord/dist/catppuccin-mocha.theme.css"

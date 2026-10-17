@@ -35,6 +35,11 @@ hl.config({
 		gaps_in = 0,
 		gaps_out = 0
 	},
+
+	decoration = {
+		active_opacity = 1.0,
+		inactive_opacity = 0.95,
+	},
 	-- Niri-style infinite-scrolling columns: new columns appear to the
 	-- right, don't wrap at the first/last column, and focus only scrolls
 	-- the view the minimum amount needed to bring the focused column
@@ -46,5 +51,13 @@ hl.config({
 		wrap_focus = 0,
 		wrap_swapcol = 0,
 		focus_fit_method = 1,
+		-- Hyprland's default stretches a lone column to the full monitor
+		-- width at render time regardless of its configured/stored width -
+		-- that's what made a solo terminal (rules.lua's 0.25 scrolling_width)
+		-- cover the whole screen and made SUPER+F look broken (it was
+		-- toggling the stored width fine, just not changing what was drawn,
+		-- since 1 column always rendered at 100%). binds.lua's window.open
+		-- hook now owns "what width should a lone column be" instead.
+		fullscreen_on_one_column = false,
 	},
 })
