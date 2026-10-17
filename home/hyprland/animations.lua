@@ -11,7 +11,13 @@ hl.animation({ leaf = "fade", enabled = true, speed = 4, bezier = "fluidOut" })
 hl.animation({ leaf = "border", enabled = true, speed = 4, bezier = "fluidInOut" })
 hl.animation({ leaf = "layers", enabled = true, speed = 4, bezier = "fluidOut", style = "slide" })
 
--- Clean vertical scroll between workspaces.
-hl.animation({ leaf = "workspaces", enabled = true, speed = 5, bezier = "fluidInOut", style = "slidevert" })
-hl.animation({ leaf = "workspacesIn", enabled = true, speed = 5, bezier = "fluidInOut", style = "slidevert" })
-hl.animation({ leaf = "workspacesOut", enabled = true, speed = 5, bezier = "fluidInOut", style = "slidevert" })
+-- Clean vertical scroll between workspaces. binds.lua chains rapid
+-- repeated j/k presses into sequential same-speed hops (one every
+-- WORKSPACE_ANIM_MS, which must match speed*100 here) rather than firing
+-- independent/overlapping animations - that's what actually fixes the
+-- "second hop looks faster/slower" problem, not the curve shape. It also
+-- temporarily swaps style to "fade" for SUPER+<number> jumps - see
+-- focusWorkspaceByNumber in binds.lua.
+hl.animation({ leaf = "workspaces", enabled = true, speed = 2.5, bezier = "fluidInOut", style = "slidevert" })
+hl.animation({ leaf = "workspacesIn", enabled = true, speed = 2.5, bezier = "fluidInOut", style = "slidevert" })
+hl.animation({ leaf = "workspacesOut", enabled = true, speed = 2.5, bezier = "fluidInOut", style = "slidevert" })

@@ -25,4 +25,8 @@
   # Plugin .so path, read by hl.plugin.load() in hyprland.lua. An env var
   # sidesteps the same nested-path problem a Nix-managed file would hit.
   home.sessionVariables.HYPRSPACE_PLUGIN = "${pkgs.hyprlandPlugins.hyprspace}/lib/libhyprspace.so";
+
+  # Screenshot binds in binds.lua (SUPER+SHIFT+S / SUPER+CTRL+SHIFT+S)
+  # shell out to this. Pulls in grim/slurp/wl-clipboard as dependencies.
+  home.packages = [ pkgs.grimblast ];
 }

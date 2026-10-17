@@ -7,5 +7,7 @@
     # Mojang's official launcher was removed from nixpkgs (broken); this is
     # the recommended replacement and covers base/vanilla Minecraft fine.
     pkgs.prismlauncher
+    # Hollow Knight mod manager (successor to the old "Scarab" name).
+    pkgs.lumafly
   ];
 }

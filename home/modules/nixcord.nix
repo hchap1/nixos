@@ -16,9 +16,13 @@
     };
 
     config = {
+      # Theme is driven live by theme-switch.sh writing an @import into
+      # quickCss.css instead of being fixed here - nixcord writes
+      # settings.json as a nix-store symlink (not user-editable), but
+      # quickCss.css is left as a regular file specifically for live
+      # editing like this, so it survives theme switches without a
+      # rebuild. See theme-switch.sh for the two theme URLs.
       useQuickCss = true;
-      themeLinks = [ "https://catppuccin.github.io/discord/dist/catppuccin-mocha.theme.css" ];
-      enabledThemeLinks = [ "https://catppuccin.github.io/discord/dist/catppuccin-mocha.theme.css" ];
 
       plugins = {
         # Keeps deleted/edited messages visible instead of silently vanishing.
