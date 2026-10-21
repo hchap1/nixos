@@ -27,7 +27,7 @@
   nixpkgs.overlays = [
     (final: prev: {
       hyprlandPlugins = prev.hyprlandPlugins // {
-        hyprspace = prev.hyprlandPlugins.hyprspace.overrideAttrs (_: {
+        hyprspace = prev.hyprlandPlugins.hyprspace.overrideAttrs (old: {
           version = "0-unstable-2026-07-07";
           src = final.fetchFromGitHub {
             owner = "KZDKM";
@@ -35,6 +35,12 @@
             rev = "58ab0722a4a9da65fc54a65709c3165220ffde86";
             hash = "sha256-O+/GVgrGmsMw9gkE/KEpXyG2nzZ7yd6qBv2yK5OdFP8=";
           };
+          # Upstream always sizes a workspace's overview thumbnail to exactly
+          # one monitor-width, so columns scrolled past the screen edge in a
+          # scrolling layout got silently clipped out of SUPER+Tab. This
+          # widens each thumbnail to its workspace's real rightmost window
+          # edge instead - see the patch file for the full rationale.
+          patches = (old.patches or [ ]) ++ [ ./patches/hyprspace-overview-fit.patch ];
         });
       };
     })

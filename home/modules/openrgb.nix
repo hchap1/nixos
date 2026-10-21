@@ -2,6 +2,8 @@
 
 let
   openrgb = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.openrgb;
+  # Catppuccin Mocha mauve - same accent as home/modules/theme.nix.
+  purple = "cba6f7";
 in
 
 {
@@ -28,6 +30,38 @@ in
     Service = {
       ExecStart = "${openrgb}/bin/openrgb --server";
       Restart = "on-failure";
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
+
+  # Keeps every RGB device pinned to a persistent purple on every boot/login,
+  # replacing the old theme-switch.sh keybind toggle. Polls for the server's
+  # client port the same way theme-switch.sh used to, since the server's
+  # hardware scan (~5-6s) isn't done just because systemd says it started.
+  systemd.user.services.openrgb-apply-color = {
+    Unit = {
+      Description = "Apply persistent purple RGB color";
+      After = [ "openrgb-server.service" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.writeShellScript "openrgb-apply-color" ''
+        set -euo pipefail
+
+        for _ in $(seq 1 30); do
+          if timeout 1 bash -c "echo >/dev/tcp/127.0.0.1/6742" 2>/dev/null; then
+            break
+          fi
+          sleep 1
+        done
+
+        cmd=(${openrgb}/bin/openrgb --client 127.0.0.1:6742)
+        # ASUS Aura USB's two case-fan zones default to 0 LEDs until sized -
+        # see the matching comment that used to live in theme-switch.sh.
+        "''${cmd[@]}" --device "ASUS" --zone 1 --size 16 --zone 2 --size 16 >/dev/null 2>&1 || true
+        "''${cmd[@]}" --mode direct --color ${purple} --brightness 100 >/dev/null 2>&1 || true
+      ''}";
     };
     Install.WantedBy = [ "graphical-session.target" ];
   };

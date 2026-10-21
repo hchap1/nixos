@@ -7,5 +7,8 @@
     # ../theme.nix instead of shipping its own look.
     pkgs.karere
     pkgs.notion-app-enhanced
+    # Mail client - closer to Outlook's single-window/unified-inbox feel
+    # than Thunderbird.
+    pkgs.mailspring
   ];
 }

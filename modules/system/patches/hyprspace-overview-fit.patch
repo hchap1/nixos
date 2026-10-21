@@ -1,0 +1,61 @@
+diff --git a/src/Render.cpp b/src/Render.cpp
+index 4720a1b..86cf1cb 100644
+--- a/src/Render.cpp
++++ b/src/Render.cpp
+@@ -258,20 +258,51 @@ void CHyprspaceWidget::draw() {
+ 
+     std::sort(workspaces.begin(), workspaces.end());
+ 
++    // A scrolling-layout workspace (e.g. Hyprland's native scrolling layout,
++    // or plugins like hy3/niri-alikes) can hold windows anchored well past
++    // the right edge of the monitor - that's the point of "scrolling". The
++    // thumbnail used to always be exactly one monitor-width wide, so any
++    // column you'd scrolled past got silently clipped out of the overview.
++    // This widens each workspace's own thumbnail to its real rightmost
++    // window edge (never narrower than one monitor-width) so scrolled-off
++    // columns are still visible, just smaller - scaled down by the same
++    // factor as everything else instead of clipped away.
++    auto workspaceContentWidth = [&](int wsID) -> double {
++        double maxX = owner->m_transformedSize.x;
++        const auto ws = g_pCompositor->getWorkspaceByID(wsID);
++        if (!ws) return maxX;
++        for (auto& w : g_pCompositor->m_windows) {
++            if (!w || w->m_workspace != ws || w->m_isFloating) continue;
++            const double right = (w->m_realPosition->value().x - owner->m_position.x) + w->m_realSize->value().x;
++            if (right > maxX) maxX = right;
++        }
++        return maxX;
++    };
++
+     // render workspace boxes
+-    int wsCount = workspaces.size();
+     double monitorSizeScaleFactor = ((config.panelHeight->value() - 2 * config.workspaceMargin->value()) / (owner->m_transformedSize.y)) * owner->m_scale; // scale box with panel height
+-    double workspaceBoxW = owner->m_transformedSize.x * monitorSizeScaleFactor;
+     double workspaceBoxH = owner->m_transformedSize.y * monitorSizeScaleFactor;
+-    double workspaceGroupWidth = workspaceBoxW * wsCount + (config.workspaceMargin->value() * owner->m_scale) * (wsCount - 1);
++
++    std::vector<double> workspaceBoxWidths;
++    workspaceBoxWidths.reserve(workspaces.size());
++    double workspaceGroupWidth = 0;
++    for (size_t i = 0; i < workspaces.size(); i++) {
++        const double w = workspaceContentWidth(workspaces[i]) * monitorSizeScaleFactor;
++        workspaceBoxWidths.push_back(w);
++        workspaceGroupWidth += w;
++        if (i + 1 < workspaces.size()) workspaceGroupWidth += config.workspaceMargin->value() * owner->m_scale;
++    }
++
+     double curWorkspaceRectOffsetX = config.centerAligned->value() ? workspaceScrollOffset->value() + (widgetBox.w / 2.) - (workspaceGroupWidth / 2.) : workspaceScrollOffset->value() + config.workspaceMargin->value();
+     double curWorkspaceRectOffsetY = !config.onBottom->value() ? (((config.reservedArea->value() + config.workspaceMargin->value()) * owner->m_scale) - curYOffset->value()) : (owner->m_transformedSize.y - ((config.reservedArea->value() + config.workspaceMargin->value()) * owner->m_scale) - workspaceBoxH + curYOffset->value());
+     double workspaceOverflowSize = std::max<double>(((workspaceGroupWidth - widgetBox.w) / 2) + (config.workspaceMargin->value() * owner->m_scale), 0);
+ 
+     *workspaceScrollOffset = std::clamp<double>(workspaceScrollOffset->goal(), -workspaceOverflowSize, workspaceOverflowSize);
+ 
+-    if (!(workspaceBoxW > 0 && workspaceBoxH > 0)) return;
+-    for (auto wsID : workspaces) {
++    if (!(workspaceBoxH > 0)) return;
++    for (size_t wsIdx = 0; wsIdx < workspaces.size(); wsIdx++) {
++        const int wsID = workspaces[wsIdx];
++        const double workspaceBoxW = workspaceBoxWidths[wsIdx];
+         const auto ws = g_pCompositor->getWorkspaceByID(wsID);
+         CBox curWorkspaceBox = {curWorkspaceRectOffsetX, curWorkspaceRectOffsetY, workspaceBoxW, workspaceBoxH};
+ 

@@ -26,7 +26,8 @@
   # sidesteps the same nested-path problem a Nix-managed file would hit.
   home.sessionVariables.HYPRSPACE_PLUGIN = "${pkgs.hyprlandPlugins.hyprspace}/lib/libhyprspace.so";
 
-  # Screenshot binds in binds.lua (SUPER+SHIFT+S / SUPER+CTRL+SHIFT+S)
-  # shell out to this. Pulls in grim/slurp/wl-clipboard as dependencies.
-  home.packages = [ pkgs.grimblast ];
+  # Screenshot binds in binds.lua (SUPER+SHIFT+S / SUPER+CTRL+SHIFT+S) shell
+  # out to screenshot.sh, which needs these directly (dropped grimblast -
+  # see screenshot.sh for why).
+  home.packages = [ pkgs.grim pkgs.slurp pkgs.wl-clipboard pkgs.libnotify ];
 }

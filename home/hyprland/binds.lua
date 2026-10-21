@@ -11,13 +11,14 @@ hl.bind(mod .. " + G", function()
 	hl.dispatch(hl.dsp.window.center())
 end)
 
-hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("~/nixos/home/noctalia/theme-switch.sh"))
 hl.bind(mod .. " + SHIFT + U", hl.dsp.exec_cmd("noctalia msg session lock"))
 hl.bind(mod .. " + SPACE", hl.dsp.exec_cmd("noctalia msg panel-toggle launcher"))
 
--- Drag-select a region.
-hl.bind(mod .. " + SHIFT + S", hl.dsp.exec_cmd("grimblast --notify copy area"))
-hl.bind(mod .. " + CTRL + SHIFT + S", hl.dsp.exec_cmd("grimblast --notify copysave area"))
+-- Drag-select a region. See screenshot.sh for why this isn't grimblast -
+-- its freeze-frame trick was flickering and sometimes leaking the
+-- selection box into the capture.
+hl.bind(mod .. " + SHIFT + S", hl.dsp.exec_cmd("~/nixos/home/hyprland/screenshot.sh copy"))
+hl.bind(mod .. " + CTRL + SHIFT + S", hl.dsp.exec_cmd("~/nixos/home/hyprland/screenshot.sh save"))
 
 -- Niri-style overview. Hyprspace exposes this as hl.plugin.overview.*
 -- (addLuaFunction) rather than a classic string dispatcher - see the
@@ -48,24 +49,17 @@ end
 -- Resizes the focused column between a fixed pair of width fractions
 -- (of the monitor's width), toggling to whichever of the pair it's
 -- currently furthest from. No-ops on floating windows (they have no
--- column). A column alone on its workspace always resolves to half width
--- instead of toggling - see the window.open hook below for why "alone"
--- means half in the first place; Win+F re-asserts that regardless of
--- the pair, rather than letting a lone column cycle down to quarter
--- (dead space with nothing to balance against) or getting stuck looking
--- unchanged if something external nudged its stored width around.
+-- column). Applies the same toggle whether the column is alone on its
+-- workspace or not - the window.open hook below still seeds a lone
+-- column at half width, but Win+F/Win+Shift+F cycle it from there like
+-- any other column instead of snapping it back to 0.5 every press.
 local function cycleColumnWidth(pair)
 	local win = hl.get_active_window()
 	if not win then return end
 	local col = win.layout and win.layout.column
 	if not col then return end
 
-	local target
-	if countColumns(win.workspace) <= 1 then
-		target = 0.5
-	else
-		target = (math.abs(col.width - pair[1]) < 0.02) and pair[2] or pair[1]
-	end
+	local target = (math.abs(col.width - pair[1]) < 0.02) and pair[2] or pair[1]
 	hl.dispatch(hl.dsp.layout("colresize " .. target))
 end
 
