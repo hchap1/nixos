@@ -8,10 +8,14 @@
     enableSshSupport = true;
     enableFishIntegration = true;
     pinentry.package = pkgs.pinentry-tty;
-    defaultCacheTtl = 43200; # 12h, matches the ssh ttl below
-    maxCacheTtl = 43200;
-    defaultCacheTtlSsh = 43200; # 12h
-    maxCacheTtlSsh = 43200;
+    # gpg-agent has no literal "never expire" - pinning both the idle and
+    # max TTLs to ~68 years (2^31-1s) is the standard way to get that in
+    # practice, so the pam_gnupg preset below never silently falls out of
+    # cache and re-prompts.
+    defaultCacheTtl = 2147483647;
+    maxCacheTtl = 2147483647;
+    defaultCacheTtlSsh = 2147483647;
+    maxCacheTtlSsh = 2147483647;
     # required for pam_gnupg (modules/system/gnupg-pam.nix) to preset the
     # passphrase into the agent's cache at SDDM login time
     extraConfig = "allow-preset-passphrase";

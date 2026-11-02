@@ -2,8 +2,7 @@
 
 let
   openrgb = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.openrgb;
-  # Catppuccin Mocha mauve - same accent as home/modules/theme.nix.
-  purple = "cba6f7";
+  white = "FFFFFF";
 in
 
 {
@@ -34,13 +33,17 @@ in
     Install.WantedBy = [ "graphical-session.target" ];
   };
 
-  # Keeps every RGB device pinned to a persistent purple on every boot/login,
-  # replacing the old theme-switch.sh keybind toggle. Polls for the server's
-  # client port the same way theme-switch.sh used to, since the server's
-  # hardware scan (~5-6s) isn't done just because systemd says it started.
+  # Keeps case fans, mousepad, and the monitor's RGB pinned to white on every
+  # boot/login, replacing the old theme-switch.sh keybind toggle. Deliberately
+  # skips the Razer keyboard/mouse (routed through the monitor's KVM, but
+  # still visible to OpenRGB as "Razer Huntsman Mini" / "Razer Deathadder V2
+  # Mini") by targeting devices by name instead of applying to all. Polls for
+  # the server's client port the same way theme-switch.sh used to, since the
+  # server's hardware scan (~5-6s) isn't done just because systemd says it
+  # started.
   systemd.user.services.openrgb-apply-color = {
     Unit = {
-      Description = "Apply persistent purple RGB color";
+      Description = "Apply persistent white RGB color";
       After = [ "openrgb-server.service" ];
       PartOf = [ "graphical-session.target" ];
     };
@@ -60,7 +63,9 @@ in
         # ASUS Aura USB's two case-fan zones default to 0 LEDs until sized -
         # see the matching comment that used to live in theme-switch.sh.
         "''${cmd[@]}" --device "ASUS" --zone 1 --size 16 --zone 2 --size 16 >/dev/null 2>&1 || true
-        "''${cmd[@]}" --mode direct --color ${purple} --brightness 100 >/dev/null 2>&1 || true
+        "''${cmd[@]}" --device "Goliathus" --mode direct --color ${white} --brightness 100 >/dev/null 2>&1 || true
+        "''${cmd[@]}" --device "ASUS" --mode direct --color ${white} --brightness 100 >/dev/null 2>&1 || true
+        "''${cmd[@]}" --device "MSI" --mode direct --color ${white} --brightness 100 >/dev/null 2>&1 || true
       ''}";
     };
     Install.WantedBy = [ "graphical-session.target" ];
