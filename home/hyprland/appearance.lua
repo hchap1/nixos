@@ -4,7 +4,7 @@ local border = "cba6f7"
 hl.config({
 	general = {
 		layout = "scrolling",
-		border_size = 3,
+		border_size = 0,
 		col = {
 			active_border = "rgba(" .. border .. "ff)",
 		},
@@ -15,7 +15,7 @@ hl.config({
 
 	decoration = {
 		active_opacity = 1.0,
-		inactive_opacity = 0.95,
+		inactive_opacity = 1.0,
 	},
 	-- Niri-style infinite-scrolling columns: new columns appear to the
 	-- right, don't wrap at the first/last column, and focus only scrolls

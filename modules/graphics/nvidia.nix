@@ -26,4 +26,11 @@
     # webkit2gtk-based app, e.g. Modrinth App (Tauri).
     WEBKIT_DISABLE_DMABUF_RENDERER = "1";
   };
+  # __GL_THREADED_OPTIMIZATIONS=0 used to be set globally here to fix
+  # Vivaldi/Onshape WebGL context-loss crashes (NVIDIA's threaded GL
+  # optimizations racing when an app juggles multiple GL contexts across
+  # threads/processes - exactly what Chromium/ANGLE does per-tab). That
+  # also made Brave's PDF viewer painfully laggy, since PDF scroll hammers
+  # the GL raster/compositor threads far harder than normal page scrolling.
+  # Moved to apply only to Vivaldi, in home/modules/apps/browser.nix.
 }
